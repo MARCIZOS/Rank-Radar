@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rank Radar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="15" fill="none" stroke="#f4b740" stroke-width="1.6"/><circle cx="17" cy="17" r="9" fill="none" stroke="#f4b740" stroke-opacity=".5" stroke-width="1.2"/><path d="M17 17 L29 9" stroke="#f4b740" stroke-width="2" stroke-linecap="round"/><circle cx="23.5" cy="12.5" r="2.4" fill="#46d483"/></svg>
+      <div><h1>Rank Radar</h1><p data-i="tagline">Your fantasy rank, explained ball by ball.</p></div>
+    </div>
+    <div class="hright">
+      <label for="lang" data-i="langlbl">Language</label>
+      <select id="lang"><option value="English">English</option><option value="Hinglish">Hinglish</option><option value="Hindi">हिंदी</option></select>
+      <span class="demo" data-i="demo">Demo · replayed T20 chase · fictional players</span>
+    </div>
+  </header>
+
+  <nav class="probs" aria-label="Fan problems this solves">
+    <button class="prob" type="button" data-try="why"><span class="pq" data-i="p1q">"My rank fell 20,000. Why?"</span><span class="pa" data-i="p1a">Every swing, explained.</span></button>
+    <button class="prob" type="button" data-try="catch"><span class="pq" data-i="p2q">"I missed 5 overs on the metro."</span><span class="pa" data-i="p2a">A 15-second recap.</span></button>
+    <button class="prob" type="button" data-try="teams"><span class="pq" data-i="p3q">"I have 6 teams. Which are still alive?"</span><span class="pa" data-i="p3a">All teams, one view.</span></button>
+  </nav>
+
+  <section class="board" aria-label="Live match">
+    <div>
+      <div class="teams">Kochi Comets <span style="color:var(--faint)" data-i="chasing">chasing</span> Nagpur Nomads 184/5</div>
+      <div class="score num" id="score">0/0<small>0.0 ov</small></div>
+      <div class="chase" id="chase"></div>
+      <div class="last6" id="last6" aria-label="Recent balls"></div>
+    </div>
+    <div class="crease" id="crease"></div>
+    <div class="controls">
+      <div class="btnrow">
+        <button class="ctl" id="resetBtn" data-i="restart">Restart</button>
+        <button class="ctl primary" id="playBtn">Play</button>
+        <button class="ctl" id="stepBtn" data-i="nextball">Next ball</button>
+      </div>
+      <div class="seg" role="group" aria-label="Replay speed">
+        <button data-speed="1500" aria-pressed="true">1×</button>
+        <button data-speed="600" aria-pressed="false">3×</button>
+        <button data-speed="160" aria-pressed="false">10×</button>
+      </div>
+      <input type="range" class="scrub" id="scrub" min="0" max="1" value="0" aria-label="Jump to ball">
+    </div>
+    <div class="result" id="result" hidden></div>
+  </section>
+
+  <section class="card teamsCard" aria-label="All your teams">
+    <h2><span data-i="myteams">My teams</span> <span class="aside" id="teamsSum"></span></h2>
+    <div class="tiles" id="tiles"></div>
+    <div class="cheer" id="cheer"></div>
+  </section>
+
+  <div class="cols">
+    <div class="col left">
+      <section class="card" id="rankCard">
+        <h2><span id="rankTitle">Your rank</span> <span class="aside" data-i="contest">2,50,000 teams · top 60,000 win</span></h2>
+        <div class="rankline">
+          <div class="rank num" id="rank">#—</div>
+          <div>
+            <div class="delta flat" id="delta">—</div>
+            <div class="of" id="pct"></div>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="k" data-i="yourpts">Your points</div><div class="v" id="yourPts">0</div></div>
+          <div class="stat"><div class="k" data-i="avgriv">Avg rival</div><div class="v" id="avgPts">0</div></div>
+          <div class="stat"><div class="k" data-i="pzone">Prize zone</div><div id="zone"></div></div>
+        </div>
+        <div class="chart" id="chart"></div>
+      </section>
+
+      <section class="card" id="feedCard">
+        <h2 data-i="feedh">Why your rank moved</h2>
+        <div class="feed" id="feed"></div>
+      </section>
+    </div>
+
+    <div class="col right">
+      <section class="card" id="nowCard">
+        <h2><span data-i="nowh">Right now</span> <span class="aside" data-i="nowaside">next ball</span></h2>
+        <div class="now" id="now"></div>
+      </section>
+
+      <section class="card" id="aiCard">
+        <h2><span data-i="askh">Ask Rank Radar</span> <span class="aistate" id="aiState">Checking for Claude…</span></h2>
+        <div class="chips">
+          <button class="chip" data-q="catch">I missed 5 overs</button>
+          <button class="chip" data-q="why">Why did my rank move?</button>
+                    <button class="chip" data-q="root">Who should I root for now?</button>
+          <button class="chip" data-q="teams">Which of my teams can still win?</button>
+        </div>
+        <form class="askrow" id="askForm">
+          <input id="askInput" placeholder="e.g. Is my captain still worth it?" autocomplete="off" aria-label="Ask a question">
+          <button class="ctl primary" style="flex:0 0 auto" type="submit" data-i="askbtn">Ask</button>
+        </form>
+        <div class="answer" id="answer">
+          <div class="q" data-i="ansq">Try a question above</div>
+          <div class="a" style="color:var(--dim)" data-i="ansa">Tap a question. Every answer uses your teams, the live score and the other 2,50,000 teams.</div>
+        </div>
+      </section>
+
+      <section class="card" id="teamCard">
+        <details><summary class="xisum"><span id="xiTitle">Your XI</span><button class="link" id="editBtn" type="button" data-i="editbtn">Edit team</button></summary>
+        <div class="xi" id="xi" style="margin-top:8px"></div></details>
+      </section>
+    </div>
+  </div>
+
+  <p class="foot" data-i="foot">Demo: a fictional T20 chase replayed against 2,500 simulated rival teams, scaled to a 2,50,000-team contest. Ranks are computed every ball; Claude only explains them. In production, a live ball-by-ball feed and real contest ownership would replace the simulation.</p>
+</div>
+
+<div class="editor" id="editor" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="edTitle">
+    <header><h3 id="edTitle">Pick your XI</h3>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="link" type="button" id="presetMine" data-i="pmine">Differential team</button>
+        <button class="link" type="button" id="presetCrowd" data-i="pcrowd">Most-picked team</button>
+      </div>
+    </header>
+    <div class="body" id="edBody"></div>
+    <footer><span id="edMsg" class="of"></span>
+      <div style="display:flex;gap:6px"><button class="ctl" type="button" id="edCancel" data-i="cancel">Cancel</button><button class="ctl primary" type="button" id="edSave" data-i="save">Save team</button></div>
+    </footer>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
